@@ -184,13 +184,6 @@ public:
 	// set vehicle landed status data
 	void set_in_air_status(bool in_air) {_control_status.flags.in_air = in_air;}
 
-	/*
-	Reset all IMU bias states and covariances to initial alignment values.
-	Use when the IMU sensor has changed.
-	Returns true if reset performed, false if rejected due to less than 10 seconds lapsed since last reset.
-	*/
-	virtual bool reset_imu_bias() = 0;
-
 	// return true if the attitude is usable
 	bool attitude_valid() { return ISFINITE(_output_new.quat_nominal(0)) && _control_status.flags.tilt_align; }
 
