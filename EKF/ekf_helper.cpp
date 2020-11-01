@@ -574,7 +574,7 @@ void Ekf::constrainStates()
 	_state.wind_vel = matrix::constrain(_state.wind_vel, -100.0f, 100.0f);
 }
 
-float Ekf::compensateBaroForDynamicPressure(const float baro_alt_uncompensated)
+float Ekf::compensateBaroForDynamicPressure(const float baro_alt_uncompensated) const
 {
 	// calculate static pressure error = Pmeas - Ptruth
 	// model position error sensitivity as a body fixed ellipse with a different scale in the positive and
@@ -877,7 +877,7 @@ bool Ekf::reset_imu_bias()
 // A value > 1 indicates that the sensor measurement has exceeded the maximum acceptable level and has been rejected by the EKF
 // Where a measurement type is a vector quantity, eg magnetometer, GPS position, etc, the maximum value is returned.
 void Ekf::get_innovation_test_status(uint16_t &status, float &mag, float &vel, float &pos, float &hgt, float &tas,
-				     float &hagl, float &beta)
+				     float &hagl, float &beta) const
 {
 	// return the integer bitmask containing the consistency check pass/fail status
 	status = _innov_check_fail_status.value;
@@ -900,7 +900,7 @@ void Ekf::get_innovation_test_status(uint16_t &status, float &mag, float &vel, f
 }
 
 // return a bitmask integer that describes which state estimates are valid
-void Ekf::get_ekf_soln_status(uint16_t *status)
+void Ekf::get_ekf_soln_status(uint16_t *status) const
 {
 	ekf_solution_status soln_status;
 	// TODO: Is this accurate enough?
@@ -939,13 +939,6 @@ void Ekf::uncorrelateQuatFromOtherStates()
 {
 	P.slice<_k_num_states - 4, 4>(4, 0) = 0.f;
 	P.slice<4, _k_num_states - 4>(0, 4) = 0.f;
-}
-
-bool Ekf::global_position_is_valid()
-{
-	// return true if the origin is set we are not doing unconstrained free inertial navigation
-	// and have not started using synthetic position observations to constrain drift
-	return (_NED_origin_initialised && !_deadreckon_time_exceeded && !_using_synthetic_position);
 }
 
 // return true if we are totally reliant on inertial dead-reckoning for position
